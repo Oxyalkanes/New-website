@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <img src="{{ url_for('avatar_file', filename=user.avatar) }}" alt="头像" class="rounded-circle img-fluid mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                <h3>{{ user.username }}</h3>
+                <p class="text-muted">{{ user.email }}</p>
+                {% if user.bio %}
+                <p>{{ user.bio }}</p>
+                {% else %}
+                <p class="text-muted">该用户还没有填写简介。</p>
+                {% endif %}
+                {% if current_user.is_authenticated and current_user.id == user.id %}
+                <a href="{{ url_for('edit_profile') }}" class="btn btn-primary">编辑资料</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <h2>{{ user.username }} 上传的视频</h2>
+        <div class="row">
+            {% for video in videos %}
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ video.title }}</h5>
+                        <p class="card-text text-muted">
+                            分类：{{ video.category.name if video.category else '未分类' }}<br>
+                            上传于 {{ video.upload_time.strftime('%Y-%m-%d %H:%M') }}
+                        </p>
+                        <p class="card-text">{{ video.description[:50] }}{% if video.description|length > 50 %}...{% endif %}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="{{ url_for('video_detail', video_id=video.id) }}" class="btn btn-primary">观看</a>
+                            <span>
+                                <i class="bi bi-heart"></i> {{ video.like_count }}
+                                <i class="bi bi-chat"></i> {{ video.comment_count }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <p>该用户还没有上传视频。</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>搜索视频</h1>
+<form method="POST" class="mb-4">
+    {{ form.hidden_tag() }}
+    <div class="input-group">
+        {{ form.query(class="form-control", placeholder="输入标题或描述...") }}
+        {{ form.submit(class="btn btn-primary") }}
+    </div>
+</form>
+
+{% if query %}
+    <h3>搜索结果: "{{ query }}"</h3>
+    <div class="row">
+        {% for video in results %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ video.title }}</h5>
+                    <p class="card-text text-muted">
+                        上传者：{{ video.uploader.username }}<br>
+                        分类：{{ video.category.name if video.category else '未分类' }}<br>
+                        上传于 {{ video.upload_time.strftime('%Y-%m-%d %H:%M') }}
+                    </p>
+                    <p class="card-text">{{ video.description[:50] }}{% if video.description|length > 50 %}...{% endif %}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{{ url_for('video_detail', video_id=video.id) }}" class="btn btn-primary">观看</a>
+                        <span>
+                            <i class="bi bi-heart"></i> {{ video.like_count }}
+                            <i class="bi bi-chat"></i> {{ video.comment_count }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <p>没有找到相关视频。</p>
+        {% endfor %}
+    </div>
+{% endif %}
+{% endblock %}
